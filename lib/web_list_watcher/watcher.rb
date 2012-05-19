@@ -1,38 +1,31 @@
 require 'open-uri'
 require 'nokogiri'
 require 'set'
-require 'net/smtp'
-require 'tlsmail'
-require_relative '../web_list_watcher'
+require_relative 'watcher_config'
 require_relative 'email_generator'
+require_relative 'gmail_email_sender'
 
 module WebListWatcher
   class Watcher
-    def initialize(config_filename, data_directory, email_address)
-      @config = WebListWatcher.read_config(config_filename)
+    def initialize(config_filename, data_directory)
+      @config = WebListWatcher::WatcherConfig.create_config(config_filename)
       @data_directory = data_directory
-      @email_address = email_address
     end
 
     def check
-      new_items = @config["web_pages"].collect { |web_page| check_page(web_page) }.select { |x| x }
-      email(new_items) if new_items.length > 0
+      new_items = @config.web_pages.collect { |web_page| check_page(web_page) }.select { |x| x }
+      send_email(new_items) if new_items.length > 0
     end
 
-    def email(new_items)
-      from = @config["from_email"]
-      to = @config["to_email"]
-      email_content = EmailGenerator.generate(new_items, from, to)
-      puts email_content
-
-      Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
-      Net::SMTP.start('smtp.gmail.com', 587, 'gmail.com', from, @config["password"], :login) do |smtp|
-        smtp.send_message(email_content, from, to)
-      end
+    def send_email(new_items)
+      from = @config.from_email
+      to = @config.to_email
+      content = EmailGenerator.generate(new_items, from, to)
+      GmailEmailSender.send(from, @config.password, to, content)
     end
 
     def check_page(web_page)
-      id = web_page["id"]
+      id = web_page.id
       seen_file_name = "#@data_directory/#{id}.seen"
       seen = load_seen_items(seen_file_name)
       found = find_items(web_page)
@@ -50,11 +43,11 @@ module WebListWatcher
 
     def find_items(web_page)
       items = Set.new
-      uri = web_page["uri"]
+      uri = web_page.uri
       pages_seen = Set.new
 
       while uri && !pages_seen.include?(uri) do
-        doc = Nokogiri::HTML(open(uri, "User-agent" => @config["user_agent"]))
+        doc = Nokogiri::HTML(open(uri, "User-agent" => @config.user_agent))
         items.merge(load_page_items(doc, uri, web_page))
         pages_seen << uri
         uri = next_uri(doc, web_page)
@@ -64,13 +57,13 @@ module WebListWatcher
     end
 
     def load_page_items(doc, uri, web_page)
-      doc.xpath(web_page["xpaths"]["item"]).collect do |item|
+      doc.xpath(web_page.xpaths["item"]).collect do |item|
         URI.join(uri, item.content).to_s
       end
     end
 
     def next_uri(doc, web_page)
-      next_node = doc.xpath(web_page["xpaths"]["next_page"]).first
+      next_node = doc.xpath(web_page.xpaths["next_page"]).first
       next_node && next_node.content
     end
 
