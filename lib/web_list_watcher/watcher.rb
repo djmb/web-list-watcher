@@ -50,7 +50,7 @@ module WebListWatcher
         doc = Nokogiri::HTML(open(uri, "User-agent" => @config.user_agent))
         items.merge(load_page_items(doc, uri, web_page))
         pages_seen << uri
-        uri = next_uri(doc, web_page)
+        uri = next_uri(doc, web_page, uri)
       end
 
       items
@@ -62,9 +62,9 @@ module WebListWatcher
       end
     end
 
-    def next_uri(doc, web_page)
+    def next_uri(doc, web_page, uri)
       next_node = doc.xpath(web_page.xpaths["next_page"]).first
-      next_node && next_node.content
+      next_node && URI.join(uri, next_node.content)
     end
 
     def load_seen_items(seen_file_name)
