@@ -1,3 +1,5 @@
+require "json"
+
 module WebListWatcher
   class WatcherConfig
     attr_reader :from_email, :password, :to_email, :user_agent, :web_pages
