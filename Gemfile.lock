@@ -1,10 +1,26 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    ansi (1.4.3)
+    builder (3.0.0)
+    hashie (1.2.0)
+    minitest (3.3.0)
+    minitest-reporters (0.10.1)
+      ansi
+      builder
+      minitest (>= 2.12, < 4.0)
+      powerbar
     nokogiri (1.5.5)
+    powerbar (1.0.7)
+      ansi (~> 1.4.0)
+      hashie (>= 1.1.0)
+    tlsmail (0.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  minitest
+  minitest-reporters (>= 0.5.0)
   nokogiri
+  tlsmail

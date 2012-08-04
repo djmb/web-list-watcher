@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 gem "nokogiri"
 gem "tlsmail"
+gem "json"
 group :test do
   if RUBY_PLATFORM =~ /(win32|w32)/
     gem "win32console", '1.3.0'
