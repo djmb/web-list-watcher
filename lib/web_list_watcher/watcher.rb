@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'set'
 require_relative 'watcher_config'
 require_relative 'email_generator'
-require_relative 'gmail_email_sender'
+require_relative 'yahoo_email_sender'
 
 module WebListWatcher
   class Watcher
@@ -23,7 +23,7 @@ module WebListWatcher
       from = @config.from_email
       to = @config.to_email
       content = EmailGenerator.generate(new_items, from, to)
-      GmailEmailSender.send(from, @config.password, to, content)
+      YahooEmailSender.send(from, @config.password, to, content)
     end
 
     def check_page(web_page)
