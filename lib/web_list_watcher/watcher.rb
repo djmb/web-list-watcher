@@ -34,7 +34,7 @@ module WebListWatcher
         new = found.difference(seen)
       end
       save_seen_items(seen_file_name, found)
-      new.length > 1 ? [id, new.to_a] : nil
+      new && new.length > 1 ? [id, new.to_a] : nil
     end
 
     def save_seen_items(seen_file_name, found)
