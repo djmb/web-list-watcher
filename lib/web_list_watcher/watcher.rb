@@ -14,7 +14,7 @@ module WebListWatcher
 
     def check
       new_items = @config.web_pages.collect { |web_page| check_page(web_page) }.select { |x| x }
-      count = new_items.length
+      count = new_items.inject(0) { |sum, site_items| sum + site_items[1].length }
       send_email(new_items) if count > 0
       puts "#{count} items found"
     end
