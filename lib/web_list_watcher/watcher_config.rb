@@ -34,17 +34,19 @@ module WebListWatcher
         WatcherPageConfig.new(
             web_page_json["id"],
             web_page_json["uri"],
+            web_page_json["clean_uri_regexp"],
             web_page_json["xpaths"]
         )
       end
     end
 
     class WatcherPageConfig
-      attr_reader :id, :uri, :xpaths
+      attr_reader :id, :uri, :clean_uri_regexp, :xpaths
 
-      def initialize(id, uri, xpaths)
+      def initialize(id, uri, clean_uri_regexp, xpaths)
         @id = id
         @uri = uri
+        @clean_uri_regexp = clean_uri_regexp
         @xpaths = xpaths
         validate
       end

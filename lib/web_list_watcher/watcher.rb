@@ -60,13 +60,25 @@ module WebListWatcher
 
     def load_page_items(doc, uri, web_page)
       doc.xpath(web_page.xpaths["item"]).collect do |item|
-        URI.join(uri, item.content).to_s
+        build_uri(uri, web_page.clean_uri_regexp, item.content)
       end
     end
 
     def next_uri(doc, web_page, uri)
       next_node = doc.xpath(web_page.xpaths["next_page"]).first
-      next_node && URI.join(uri, next_node.content)
+      next_node && build_uri(uri, web_page.clean_uri_regexp, next_node.content)
+    end
+
+    def build_uri(previous_uri, clean_uri_regexp, raw_uri)
+      uri = URI.join(previous_uri, raw_uri).to_s
+      clean_uri(clean_uri_regexp, uri)
+    end
+
+    def clean_uri(clean_uri_regexp, uri)
+      if clean_uri_regexp && uri =~ /#{clean_uri_regexp}/
+        uri = $~[1..-1].join
+      end
+      uri
     end
 
     def load_seen_items(seen_file_name)
