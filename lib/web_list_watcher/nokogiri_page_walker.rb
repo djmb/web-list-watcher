@@ -30,18 +30,18 @@ module WebListWatcher
 
     def load_page_items(doc)
       doc.xpath(@xpaths["item"]).collect do |item|
-        build_uri(item.content)
+        build_uri(item.content, true)
       end
     end
 
     def next_uri(doc)
       next_node = doc.xpath(@xpaths["next_page"]).first
-      next_node && build_uri(next_node.content)
+      next_node && build_uri(next_node.content, false)
     end
 
-    def build_uri(raw_uri)
+    def build_uri(raw_uri, clean)
       uri = URI.join(@current_uri, raw_uri).to_s
-      clean_uri(uri)
+      clean ? clean_uri(uri) : uri
     end
 
     def clean_uri(uri)
