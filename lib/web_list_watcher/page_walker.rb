@@ -2,30 +2,24 @@ require 'open-uri'
 require 'nokogiri'
 
 module WebListWatcher
-  class NokogiriPageWalker
-    attr_reader :current_uri, :items
-
+  class PageWalker
     def initialize(user_agent, uri, xpaths, clean_uri_regexp)
       @user_agent = user_agent
+      @uri = uri
       @xpaths = xpaths
-      @next_uri = uri
       @clean_uri_regexp = clean_uri_regexp
-      @current_uri = nil
-      @doc = nil
     end
 
     def next_page
-      @current_uri = @next_uri
-
-      if @current_uri
-        doc = Nokogiri::HTML(open(@current_uri, "User-agent" => @user_agent))
-        @next_uri = next_uri(doc)
-        @items = load_page_items(doc)
+      if @uri
+        current_uri = @uri
+        doc = Nokogiri::HTML(open(@uri, "User-agent" => @user_agent))
+        @uri = next_uri(doc)
+        [current_uri, load_page_items(doc)]
       else
-        @items = nil
+        [nil, []]
       end
 
-      @current_uri
     end
 
     def load_page_items(doc)
@@ -40,7 +34,7 @@ module WebListWatcher
     end
 
     def build_uri(raw_uri, clean)
-      uri = URI.join(@current_uri, raw_uri).to_s
+      uri = URI.join(@uri, raw_uri).to_s
       clean ? clean_uri(uri) : uri
     end
 

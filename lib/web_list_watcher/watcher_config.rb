@@ -1,7 +1,7 @@
 require "json"
 require_relative "yahoo_email_sender"
 require_relative "gmail_email_sender"
-require_relative "nokogiri_page_walker"
+require_relative "page_walker"
 
 module WebListWatcher
   class WatcherConfig
@@ -63,7 +63,7 @@ module WebListWatcher
       def initialize(id, uri, clean_uri_regexp, xpaths, user_agent)
         validate(id, uri, xpaths)
         @id = id
-        @page_walker = NokogiriPageWalker.new(user_agent, uri, xpaths, clean_uri_regexp)
+        @page_walker = PageWalker.new(user_agent, uri, xpaths, clean_uri_regexp)
       end
 
       def validate(id, uri, xpaths)

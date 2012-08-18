@@ -29,10 +29,12 @@ GEM
     powerbar (1.0.7)
       ansi (~> 1.4.0)
       hashie (>= 1.1.0)
+    ruby-fsevent (0.2.1)
     tlsmail (0.0.1)
     unf (0.0.5)
       unf_ext
     unf_ext (0.0.5)
+    watchr (0.7)
     webrobots (0.0.13)
 
 PLATFORMS
@@ -44,4 +46,6 @@ DEPENDENCIES
   minitest
   minitest-reporters (>= 0.5.0)
   nokogiri
+  ruby-fsevent
   tlsmail
+  watchr

@@ -42,13 +42,13 @@ module WebListWatcher
 
     def find_items(page_walker)
       items, pages_seen = Set.new, Set.new
-      uri = page_walker.next_page
+      uri, page_items = page_walker.next_page
 
       while uri && !pages_seen.include?(uri) do
-        items.merge(page_walker.items)
+        items.merge(page_items)
         pages_seen << uri
         sleep(2)
-        uri = page_walker.next_page
+        uri, page_items = page_walker.next_page
       end
 
       items
