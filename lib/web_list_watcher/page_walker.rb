@@ -13,9 +13,15 @@ module WebListWatcher
     def next_page
       if @uri
         current_uri = @uri
-        doc = Nokogiri::HTML(open(@uri, "User-agent" => @user_agent))
+        begin
+          doc = Nokogiri::HTML(open(@uri, "User-agent" => @user_agent))
+        rescue OpenURI::HTTPError => e
+          $stderr.puts "Got '#{e.message}' opening #@uri"
+          raise e
+        end
+        items = load_page_items(doc)
         @uri = next_uri(doc)
-        [current_uri, load_page_items(doc)]
+        [current_uri, items]
       else
         [nil, []]
       end

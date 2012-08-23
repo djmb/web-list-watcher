@@ -108,8 +108,19 @@ module WebListWatcher
       doc.verify
     end
 
-    def test_next_page
-      @page_walker.stub :open, "<html><body><div class='next'><a href='/123'>next</a></body></html>" do
+    def test_next_page_404
+      open_stub = lambda do |uri, user_agent|
+        raise OpenURI::HTTPError.new("404 Page not found", nil)
+      end
+      @page_walker.stub :open, open_stub do
+        assert_raises(OpenURI::HTTPError) do
+          @page_walker.next_page
+        end
+      end
+    end
+
+    def test_next_page_two_pages
+      @page_walker.stub :open, "<html><body><div class='next'><a href='/123'>next</a></div></body></html>" do
         assert_equal ["http://www.example.com/page?a=b", []], @page_walker.next_page
       end
 
@@ -119,5 +130,26 @@ module WebListWatcher
 
       assert_equal [nil, []], @page_walker.next_page
     end
+
+    def test_next_page_items
+      @page_walker.stub :open, "<html><body><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
+        assert_equal ["http://www.example.com/page?a=b", ["http://www.example.com/123", "http://www.example.com/456"]], @page_walker.next_page
+      end
+
+      assert_equal [nil, []], @page_walker.next_page
+    end
+
+    def test_next_page_two_page_items
+      @page_walker.stub :open, "<html><body><div class='next'><a href='/xyz'>next</a></div><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
+        assert_equal ["http://www.example.com/page?a=b", ["http://www.example.com/123", "http://www.example.com/456"]], @page_walker.next_page
+      end
+
+      @page_walker.stub :open, "<html><body><div class='item'><a href='/789'>item1</a></div><div class='item'><a href='/012'>item2</a></div></body></html>" do
+        assert_equal ["http://www.example.com/xyz", ["http://www.example.com/789", "http://www.example.com/012"]], @page_walker.next_page
+      end
+
+      assert_equal [nil, []], @page_walker.next_page
+    end
+
   end
 end

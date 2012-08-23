@@ -1,6 +1,7 @@
 require 'set'
 require_relative 'watcher_config'
 require_relative 'email_generator'
+require_relative 'seen_items_file'
 
 module WebListWatcher
   class Watcher
@@ -24,20 +25,20 @@ module WebListWatcher
     end
 
     def check_page(web_page)
-      id = web_page.id
-      seen_file_name = "#@data_directory/#{id}.seen"
-      seen = load_seen_items(seen_file_name)
-      found = find_items(web_page.page_walker)
-      new = nil
-      if seen
-        new = found.difference(seen)
+      begin
+        id = web_page.id
+        seen_items_file = SeenItemsFile.new(@data_directory, id)
+        seen = seen_items_file.load
+        found = find_items(web_page.page_walker)
+        new = nil
+        if seen
+          new = found.difference(seen)
+        end
+        seen_items_file.save(found)
+        new && new.length > 1 ? [id, new.to_a] : nil
+      rescue OpenURI::HTTPError => e
+        nil
       end
-      save_seen_items(seen_file_name, found)
-      new && new.length > 1 ? [id, new.to_a] : nil
-    end
-
-    def save_seen_items(seen_file_name, found)
-      File.open(seen_file_name, 'w') {|f| f.write(found.to_a.join("\n")) }
     end
 
     def find_items(page_walker)
@@ -52,10 +53,6 @@ module WebListWatcher
       end
 
       items
-    end
-
-    def load_seen_items(seen_file_name)
-      File.exists?(seen_file_name) ? Set.new(IO.readlines(seen_file_name).collect {|x| x.strip}) : nil
     end
   end
 end

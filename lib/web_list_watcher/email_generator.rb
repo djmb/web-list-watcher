@@ -26,8 +26,7 @@ EOF
   <body>
     <h1>New Items Found</h1>
     <div>
-      #{email_items_content(new_items)}
-    </div>
+#{email_items_content(new_items)}    </div>
   </body>
 </html>
 EMAIL_CONTENT
@@ -43,7 +42,8 @@ EMAIL_CONTENT
       <<SITE_CONTENT
       <div>
         <h2>#{site_items[0]}</h2>
-        <ul>#{email_items_list_content(site_items[1])}</ul>
+        <ul>
+#{email_items_list_content(site_items[1])}        </ul>
       </div>
 SITE_CONTENT
     end

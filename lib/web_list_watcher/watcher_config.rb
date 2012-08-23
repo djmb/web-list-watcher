@@ -5,7 +5,7 @@ require_relative "page_walker"
 
 module WebListWatcher
   class WatcherConfig
-    attr_reader :from_email, :password, :to_email, :user_agent, :web_pages, :email_sender, :page_walker
+    attr_reader :from_email, :password, :to_email, :user_agent, :web_pages, :email_sender
 
     EmailSenders = {
         "yahoo.com".to_sym => YahooEmailSender,
@@ -16,6 +16,7 @@ module WebListWatcher
       @from_email, @password, @to_email, @user_agent, @web_pages =
           from_email, password, to_email, user_agent, web_pages
       check_values_exist(:from_email, :password, :to_email, :web_pages)
+      raise "no page configs supplied" if @web_pages.size == 0
       setup_email_sender
     end
 
@@ -27,7 +28,7 @@ module WebListWatcher
 
     def check_values_exist(*names)
       names.each do |name|
-        raise StandardError, "'#{name}' specified" unless send(name)
+        raise "'#{name}' specified" unless send(name)
       end
     end
 
@@ -56,22 +57,22 @@ module WebListWatcher
         )
       end
     end
+  end
 
-    class WatcherPageConfig
-      attr_reader :id, :page_walker
+  class WatcherPageConfig
+    attr_reader :id, :page_walker
 
-      def initialize(id, uri, clean_uri_regexp, xpaths, user_agent)
-        validate(id, uri, xpaths)
-        @id = id
-        @page_walker = PageWalker.new(user_agent, uri, xpaths, clean_uri_regexp)
-      end
+    def initialize(id, uri, clean_uri_regexp, xpaths, user_agent)
+      validate(id, uri, xpaths)
+      @id = id
+      @page_walker = PageWalker.new(user_agent, uri, xpaths, clean_uri_regexp)
+    end
 
-      def validate(id, uri, xpaths)
-        raise StandardError, "Web page without id" unless id
-        raise StandardError, "No uri for web page:#{id}" unless uri
-        raise StandardError, "No item xpath for web page:#{id}" unless xpaths["item"]
-        raise StandardError, "No next page xpath for web page:#{id}" unless xpaths["next_page"]
-      end
+    def validate(id, uri, xpaths)
+      raise "Web page without id" unless id
+      raise "No uri for web page:#{id}" unless uri
+      raise "No item xpath for web page:#{id}" unless xpaths["item"]
+      raise "No next page xpath for web page:#{id}" unless xpaths["next_page"]
     end
   end
 end
