@@ -23,7 +23,7 @@ Don't use an account you care about as the password will need to be stored in th
 
 Config
 ------
-<code>
+<pre>
 {
 "from_email" : "<email to send notifications from (must be gmail.com or yahoo.com>",
 "password" : "<password for that account>",
@@ -41,4 +41,4 @@ Config
 	...
 ]
 }
-</code>
+</pre>
