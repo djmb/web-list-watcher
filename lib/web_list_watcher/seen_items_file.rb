@@ -11,7 +11,7 @@ module WebListWatcher
     end
 
     def save(items)
-      File.open(@file_name, 'w') {|f| f.write(items.to_a.join("\n")) }
+      File.open(@file_name, 'w') {|f| f.write(items.to_a.sort.join("\n")) }
     end
   end
 end

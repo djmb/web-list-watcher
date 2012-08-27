@@ -3,7 +3,7 @@ require_relative "../../lib/web_list_watcher/gmail_email_sender"
 require "net/smtp"
 
 module WebListWatcher
-  class TestYahooEmailSender < MiniTest::Unit::TestCase
+  class TestGmailEmailSender < MiniTest::Unit::TestCase
     def test_send_email
       start_stub = lambda do |smtp_server, smtp_port, domain, from_email, from_password, operation|
         assert_equal 'smtp.gmail.com', smtp_server

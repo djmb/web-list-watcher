@@ -5,8 +5,8 @@ require_relative 'seen_items_file'
 
 module WebListWatcher
   class Watcher
-    def initialize(config_filename, data_directory)
-      @config = WebListWatcher::WatcherConfig.create_config(config_filename)
+    def initialize(config, data_directory)
+      @config = config
       @data_directory = data_directory
     end
 
@@ -31,12 +31,14 @@ module WebListWatcher
         seen = seen_items_file.load
         found = find_items(web_page.page_walker)
         new = nil
+        all = Set.new(found)
         if seen
+          all.merge(seen)
           new = found.difference(seen)
         end
-        seen_items_file.save(found)
-        new && new.length > 1 ? [id, new.to_a] : nil
-      rescue OpenURI::HTTPError => e
+        seen_items_file.save(all)
+        new && new.length > 0 ? [id, new.to_a] : nil
+      rescue OpenURI::HTTPError
         nil
       end
     end

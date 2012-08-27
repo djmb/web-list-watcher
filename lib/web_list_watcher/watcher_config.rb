@@ -5,16 +5,16 @@ require_relative "page_walker"
 
 module WebListWatcher
   class WatcherConfig
-    attr_reader :from_email, :password, :to_email, :user_agent, :web_pages, :email_sender
+    attr_reader :from_email, :password, :to_email, :web_pages, :email_sender
 
     EmailSenders = {
         "yahoo.com".to_sym => YahooEmailSender,
         "gmail.com".to_sym => GmailEmailSender
     }
 
-    def initialize(from_email, password, to_email, user_agent, web_pages)
-      @from_email, @password, @to_email, @user_agent, @web_pages =
-          from_email, password, to_email, user_agent, web_pages
+    def initialize(from_email, password, to_email, web_pages)
+      @from_email, @password, @to_email, @web_pages =
+          from_email, password, to_email, web_pages
       check_values_exist(:from_email, :password, :to_email, :web_pages)
       raise "no page configs supplied" if @web_pages.size == 0
       setup_email_sender
@@ -39,7 +39,6 @@ module WebListWatcher
           json["from_email"],
           json["password"],
           json["to_email"],
-          user_agent,
           create_pages_config(json["web_pages"], user_agent),
       )
     end

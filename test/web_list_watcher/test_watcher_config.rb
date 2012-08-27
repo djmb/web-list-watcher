@@ -16,20 +16,20 @@ module WebListWatcher
 
     def test_invalid_from_email
       assert_raises(RuntimeError) do
-        WatcherConfig.new('from@invalid.com', 'password', 'to@example.com', nil, [DUMMY_PAGE_CONFIG])
+        WatcherConfig.new('from@invalid.com', 'password', 'to@example.com', [DUMMY_PAGE_CONFIG])
       end
     end
 
     def test_missing_fields
-      assert_raises(RuntimeError) { WatcherConfig.new(nil, 'password', 'to@example.com', nil, [DUMMY_PAGE_CONFIG]) }
-      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', nil, 'to@example.com', nil, [DUMMY_PAGE_CONFIG]) }
-      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', nil, nil, [DUMMY_PAGE_CONFIG]) }
-      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', nil, 'to@example.com', nil) }
-      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', nil, 'to@example.com', []) }
+      assert_raises(RuntimeError) { WatcherConfig.new(nil, 'password', 'to@example.com', [DUMMY_PAGE_CONFIG]) }
+      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', nil, 'to@example.com', [DUMMY_PAGE_CONFIG]) }
+      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', nil, [DUMMY_PAGE_CONFIG]) }
+      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', 'to@example.com', nil) }
+      assert_raises(RuntimeError) { WatcherConfig.new('from@invalid.com', 'password', 'to@example.com', []) }
     end
 
     def assert_email_sender(from_email, sender)
-      config = WatcherConfig.new(from_email, 'password', 'to@example.com', nil, [DUMMY_PAGE_CONFIG])
+      config = WatcherConfig.new(from_email, 'password', 'to@example.com', [DUMMY_PAGE_CONFIG])
       assert_equal sender, config.email_sender
     end
   end

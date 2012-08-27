@@ -112,11 +112,14 @@ module WebListWatcher
       open_stub = lambda do |uri, user_agent|
         raise OpenURI::HTTPError.new("404 Page not found", nil)
       end
-      @page_walker.stub :open, open_stub do
-        assert_raises(OpenURI::HTTPError) do
-          @page_walker.next_page
+      stdout, stderr = capture_io do
+        @page_walker.stub :open, open_stub do
+          assert_raises(OpenURI::HTTPError) do
+            @page_walker.next_page
+          end
         end
       end
+      assert_equal "Got '404 Page not found' opening http://www.example.com/page?a=b\n", stderr
     end
 
     def test_next_page_two_pages
