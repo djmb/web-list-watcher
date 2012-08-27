@@ -6,10 +6,10 @@ Watch for new items in lists on web pages. Send an email when new items are foun
 Usage
 -----
 
-ruby lib/watch.rb <config file> <data directory>
+ruby lib/watch.rb &lt;config file&gt; &lt;data directory&gt;
 
-<config file> is a json file
-<data directory> is where the items that have already been seen are stored
+&lt;config file&gt; is a json file
+&lt;data directory&gt; is where the items that have already been seen are stored
 
 Requirements
 ------------
@@ -25,17 +25,17 @@ Config
 ------
 <pre>
 {
-"from_email" : "<email to send notifications from (must be gmail.com or yahoo.com>",
-"password" : "<password for that account>",
-"to_email" : "<email to send notification to>",
-"user_agent" : "<user agent to use when loading web pages>",
+"from_email" : "&lt;email to send notifications from (must be gmail.com or yahoo.com&gt;",
+"password" : "&lt;password for that account&gt;",
+"to_email" : "&lt;email to send notification to&gt;",
+"user_agent" : "&lt;user agent to use when loading web pages&gt;",
 "web_pages" : [
 	{
-		"id" : "<an id for this set of pages>",
-		"uri" : "<uri to start looking from>",
+		"id" : "&lt;an id for this set of pages&gt;",
+		"uri" : "&lt;uri to start looking from&gt;",
 		"xpaths" : {
-			"item" : "<an xpath that extracts the hrefs of the items you are interested in>",
-			"next_page" : "<an xpath that extracts the hrefs of the next page of items>"
+			"item" : "&lt;an xpath that extracts the hrefs of the items you are interested in&gt;",
+			"next_page" : "&lt;an xpath that extracts the hrefs of the next page of items&gt;"
 		}
 	},
 	...
