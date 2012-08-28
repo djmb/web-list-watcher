@@ -34,7 +34,7 @@ Config
 	{
 		"id" : "&lt;an id for this set of pages&gt;",
 		"uri" : "&lt;uri to start looking from&gt;",
-		"clean_uri_regexp" : "&lt;regexp to clean item uris&gt;
+		"clean_uri_regexp" : "&lt;regexp to clean item uris&gt;",
 		"xpaths" : {
 			"item" : "&lt;an xpath that extracts the hrefs of the items you are interested in&gt;",
 			"next_page" : "&lt;an xpath that extracts the hrefs of the next page of items&gt;"
