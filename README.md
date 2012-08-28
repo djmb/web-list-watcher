@@ -1,7 +1,7 @@
 web-list-watcher
 ================
 
-Watch for new items in lists on web pages. Send an email when new items are found.
+A script that watches for new items in lists on web pages and sends an email when they are found.
 
 Usage
 -----
@@ -9,7 +9,8 @@ Usage
 ruby lib/watch.rb &lt;config file&gt; &lt;data directory&gt;
 
 &lt;config file&gt; is a json file
-&lt;data directory&gt; is where the items that have already been seen are stored
+
+&lt;data directory&gt; is a directory where the items that have been seen will be stored
 
 Requirements
 ------------
@@ -33,6 +34,7 @@ Config
 	{
 		"id" : "&lt;an id for this set of pages&gt;",
 		"uri" : "&lt;uri to start looking from&gt;",
+		"clean_uri_regexp" : "&lt;regexp to clean item uris&gt;
 		"xpaths" : {
 			"item" : "&lt;an xpath that extracts the hrefs of the items you are interested in&gt;",
 			"next_page" : "&lt;an xpath that extracts the hrefs of the next page of items&gt;"
@@ -42,3 +44,9 @@ Config
 ]
 }
 </pre>
+
+The clean_uri_regexp should match the entire item string and will replace the uri with the groups that it matches.
+
+This is useful if the uri has some sort of tracking parameters that vary every time you load the page.
+
+So for http://www.example.com/item1?search_id=12345, you could supply a clean_uri_regexp of <code>(.*)\?.*<code> to remove the query string.
