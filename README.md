@@ -49,4 +49,4 @@ The clean_uri_regexp should match the entire item string and will replace the ur
 
 This is useful if the uri has some sort of tracking parameters that vary every time you load the page.
 
-So for http://www.example.com/item1?search_id=12345, you could supply a clean_uri_regexp of <code>(.*)\?.*<code> to remove the query string.
+So for http://www.example.com/item1?search_id=12345, you could supply a clean_uri_regexp of <code>(.*)\?.*</code> to remove the query string.
