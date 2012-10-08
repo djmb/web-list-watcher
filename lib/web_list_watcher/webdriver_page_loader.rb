@@ -9,7 +9,7 @@ module WebListWatcher
 
     def start
       @driver = Selenium::WebDriver.for :firefox
-      @driver.manage.timeouts.implicit_wait = 30
+      @driver.manage.timeouts.implicit_wait = 120
       eval(@start_script)
     end
 
