@@ -3,6 +3,7 @@ gem "nokogiri"
 gem "tlsmail"
 gem "json"
 gem "mechanize"
+gem "selenium-webdriver"
 group :test do
   if RUBY_PLATFORM =~ /(win32|w32)/
     gem "win32console", '1.3.0'

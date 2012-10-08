@@ -103,7 +103,7 @@ EMAIL
             watcher = Watcher.new(config, "data_dir")
             watcher.stub :sleep, nil do
               web_page_config = config.web_pages[0]
-              web_page_config.page_walker.stub :open, open_stub do
+              web_page_config.page_walker.page_loader.stub :open, open_stub do
                 watcher.check
                 assert_equal seen_contents, File.open("data_dir/#{web_page_config.id}.seen", "r").read
               end
@@ -117,7 +117,7 @@ EMAIL
     def make_config(id)
       web_page_config = WatcherPageConfig.new(id, "http://example.com/123", nil, {
           "item" => "//a[@class='item']/@href", "next_page" => "//a[@class='next']/@href"
-      }, "useragent 1.0")
+      }, OpenPageLoader.new, "useragent 1.0")
 
       WatcherConfig.new("from@yahoo.com", "password", "to@example.com", [web_page_config])
     end

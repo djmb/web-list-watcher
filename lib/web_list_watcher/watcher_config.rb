@@ -2,6 +2,8 @@ require "json"
 require_relative "yahoo_email_sender"
 require_relative "gmail_email_sender"
 require_relative "page_walker"
+require_relative "open_page_loader"
+require_relative "webdriver_page_loader"
 
 module WebListWatcher
   class WatcherConfig
@@ -52,8 +54,19 @@ module WebListWatcher
             web_page_json["uri"],
             web_page_json["clean_uri_regexp"],
             web_page_json["xpaths"],
+            create_loader(web_page_json),
             user_agent
         )
+      end
+    end
+
+    def self.create_loader(json)
+      loader_name = json["loader"] || "open"
+      case loader_name
+        when "open"
+          OpenPageLoader.new
+        when "webdriver"
+          WebdriverPageLoader.new(json["start_script"].join("\n"))
       end
     end
   end
@@ -61,10 +74,10 @@ module WebListWatcher
   class WatcherPageConfig
     attr_reader :id, :page_walker
 
-    def initialize(id, uri, clean_uri_regexp, xpaths, user_agent)
+    def initialize(id, uri, clean_uri_regexp, xpaths, loader, user_agent)
       validate(id, uri, xpaths)
       @id = id
-      @page_walker = PageWalker.new(user_agent, uri, xpaths, clean_uri_regexp)
+      @page_walker = PageWalker.new(user_agent, uri, xpaths, clean_uri_regexp, loader)
     end
 
     def validate(id, uri, xpaths)

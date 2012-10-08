@@ -1,5 +1,6 @@
 require_relative "../../test/minitest_helper"
 require_relative "../../lib/web_list_watcher/page_walker"
+require_relative "../../lib/web_list_watcher/open_page_loader"
 require 'ostruct'
 
 module WebListWatcher
@@ -13,29 +14,30 @@ module WebListWatcher
               "item"=>'//div[@class="item"]/a/@href',
               "next_page"=>'//div[@class="next"]/a/@href',
           },
-          nil
+          nil,
+          OpenPageLoader.new
       )
     end
 
     REMOVE_QUERY_STRING_REGEXP = "([^?]*)\\??.*"
 
     def test_clean_uri_remove_qs
-      page_walker = PageWalker.new(nil, nil, nil, REMOVE_QUERY_STRING_REGEXP)
+      page_walker = PageWalker.new(nil, nil, nil, REMOVE_QUERY_STRING_REGEXP, OpenPageLoader.new)
       assert_equal "http://www.example.com/page", page_walker.clean_uri("http://www.example.com/page?a=b")
     end
 
     def test_clean_uri_no_match
-      page_walker = PageWalker.new(nil, nil, nil, ".*/abc")
+      page_walker = PageWalker.new(nil, nil, nil, ".*/abc", OpenPageLoader.new)
       assert_equal "http://www.example.com/page?a=b", page_walker.clean_uri("http://www.example.com/page?a=b")
     end
 
     def test_clean_uri_multi_match
-      page_walker = PageWalker.new(nil, nil, nil, "(.*/)p(.*)")
+      page_walker = PageWalker.new(nil, nil, nil, "(.*/)p(.*)", OpenPageLoader.new)
       assert_equal "http://www.example.com/age?a=b", page_walker.clean_uri("http://www.example.com/page?a=b")
     end
 
     def test_clean_uri_no_regexp
-      page_walker = PageWalker.new(nil, nil, nil, nil)
+      page_walker = PageWalker.new(nil, nil, nil, nil, OpenPageLoader.new)
       assert_equal "http://www.example.com/page?a=b", page_walker.clean_uri("http://www.example.com/page?a=b")
     end
 
@@ -52,17 +54,17 @@ module WebListWatcher
     end
 
     def test_build_uri_clean
-      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, REMOVE_QUERY_STRING_REGEXP)
+      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, REMOVE_QUERY_STRING_REGEXP, OpenPageLoader.new)
       assert_equal "http://www.example.com/abc", page_walker.build_uri("/abc?abc=123", true)
     end
 
     def test_build_uri_dont_clean
-      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, REMOVE_QUERY_STRING_REGEXP)
+      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, REMOVE_QUERY_STRING_REGEXP, OpenPageLoader.new)
       assert_equal "http://www.example.com/abc?abc=123", page_walker.build_uri("/abc?abc=123", false)
     end
 
     def run_build_uri_test(expected, uri)
-      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, nil)
+      page_walker = PageWalker.new(nil, "http://www.example.com/page?a=b", nil, nil, OpenPageLoader.new)
       assert_equal expected, page_walker.build_uri(uri, false)
     end
 
@@ -113,7 +115,7 @@ module WebListWatcher
         raise OpenURI::HTTPError.new("404 Page not found", nil)
       end
       stdout, stderr = capture_io do
-        @page_walker.stub :open, open_stub do
+        @page_walker.page_loader.stub :open, open_stub do
           assert_raises(OpenURI::HTTPError) do
             @page_walker.next_page
           end
@@ -123,11 +125,11 @@ module WebListWatcher
     end
 
     def test_next_page_two_pages
-      @page_walker.stub :open, "<html><body><div class='next'><a href='/123'>next</a></div></body></html>" do
+      @page_walker.page_loader.stub :open, "<html><body><div class='next'><a href='/123'>next</a></div></body></html>" do
         assert_equal ["http://www.example.com/page?a=b", []], @page_walker.next_page
       end
 
-      @page_walker.stub :open, "<html><body><div class='next'></body></html>" do
+      @page_walker.page_loader.stub :open, "<html><body><div class='next'></body></html>" do
         assert_equal ["http://www.example.com/123", []], @page_walker.next_page
       end
 
@@ -135,7 +137,7 @@ module WebListWatcher
     end
 
     def test_next_page_items
-      @page_walker.stub :open, "<html><body><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
+      @page_walker.page_loader.stub :open, "<html><body><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
         assert_equal ["http://www.example.com/page?a=b", ["http://www.example.com/123", "http://www.example.com/456"]], @page_walker.next_page
       end
 
@@ -143,11 +145,11 @@ module WebListWatcher
     end
 
     def test_next_page_two_page_items
-      @page_walker.stub :open, "<html><body><div class='next'><a href='/xyz'>next</a></div><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
+      @page_walker.page_loader.stub :open, "<html><body><div class='next'><a href='/xyz'>next</a></div><div class='item'><a href='/123'>item1</a></div><div class='item'><a href='/456'>item2</a></div></body></html>" do
         assert_equal ["http://www.example.com/page?a=b", ["http://www.example.com/123", "http://www.example.com/456"]], @page_walker.next_page
       end
 
-      @page_walker.stub :open, "<html><body><div class='item'><a href='/789'>item1</a></div><div class='item'><a href='/012'>item2</a></div></body></html>" do
+      @page_walker.page_loader.stub :open, "<html><body><div class='item'><a href='/789'>item1</a></div><div class='item'><a href='/012'>item2</a></div></body></html>" do
         assert_equal ["http://www.example.com/xyz", ["http://www.example.com/789", "http://www.example.com/012"]], @page_walker.next_page
       end
 

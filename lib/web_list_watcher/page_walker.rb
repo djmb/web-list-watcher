@@ -3,18 +3,22 @@ require 'nokogiri'
 
 module WebListWatcher
   class PageWalker
-    def initialize(user_agent, uri, xpaths, clean_uri_regexp)
+    attr_reader :page_loader
+
+    def initialize(user_agent, uri, xpaths, clean_uri_regexp, page_loader)
       @user_agent = user_agent
       @uri = uri
       @xpaths = xpaths
       @clean_uri_regexp = clean_uri_regexp
+      @page_loader = page_loader
+      @page_loader.start
     end
 
     def next_page
       if @uri
         current_uri = @uri
         begin
-          doc = Nokogiri::HTML(open(@uri, "User-agent" => @user_agent))
+          doc = Nokogiri::HTML(@page_loader.load(@uri, @user_agent))
         rescue OpenURI::HTTPError => e
           $stderr.puts "Got '#{e.message}' opening #@uri"
           raise e
@@ -23,6 +27,7 @@ module WebListWatcher
         @uri = next_uri(doc)
         [current_uri, items]
       else
+        @page_loader.finish
         [nil, []]
       end
 

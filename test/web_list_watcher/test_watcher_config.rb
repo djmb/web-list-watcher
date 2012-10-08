@@ -36,7 +36,7 @@ module WebListWatcher
 
   class TestWatcherPageConfig < MiniTest::Unit::TestCase
     def test_missing_fields
-      assert_raises(RuntimeError) { WatcherPageConfig.new(nil, nil, nil, nil, nil) }
+      assert_raises(RuntimeError) { WatcherPageConfig.new(nil, nil, nil, nil, nil, nil) }
     end
   end
 end
