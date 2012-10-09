@@ -40,6 +40,8 @@ module WebListWatcher
         new && new.length > 0 ? [id, new.to_a] : nil
       rescue OpenURI::HTTPError
         nil
+      rescue Timeout::Error
+        nil
       end
     end
 
