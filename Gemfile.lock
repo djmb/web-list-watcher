@@ -10,7 +10,7 @@ GEM
       unf (~> 0.0.3)
     ffi (1.1.5)
     hashie (1.2.0)
-    json (1.7.4)
+    json (2.3.0)
     libwebsocket (0.1.5)
       addressable
     mechanize (2.5.1)
@@ -36,7 +36,6 @@ GEM
     powerbar (1.0.7)
       ansi (~> 1.4.0)
       hashie (>= 1.1.0)
-    ruby-fsevent (0.2.1)
     rubyzip (0.9.9)
     selenium-webdriver (2.25.0)
       childprocess (>= 0.2.5)
@@ -59,7 +58,6 @@ DEPENDENCIES
   minitest
   minitest-reporters (>= 0.5.0)
   nokogiri
-  ruby-fsevent
   selenium-webdriver
   tlsmail
   watchr
